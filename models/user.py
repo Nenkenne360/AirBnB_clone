@@ -1,25 +1,22 @@
 #!/usr/bin/python3
 """
-a class User that inherits from BaseModel:
+0x00. AirBnB clone - The console
+User module
 """
-import models
 from models.base_model import BaseModel
 
 
 class User(BaseModel):
     """
-    ------------------
-    CLASS: User
-    DESCRIPTION:
-             a class User that inherits from BaseModel
-    ------------------
+    Defines attributes/methods for the User class, subclass of BaseModel
+    Other attributes/methods are inherited from BaseModel
     """
 
-    # ------------------------------- #
-    #       PUBLIC ATTRIBUTES         #
-    # ------------------------------- #
+    email = ""
+    password = ""
+    first_name = ""
+    last_name = ""
 
-    email = ''
-    password = ''
-    first_name = ''
-    last_name = ''
+    # def __init__(self, *args, **kwargs):
+    #     """initialize variables and methods"""
+    #     super().__init__(self, *args, **kwargs)

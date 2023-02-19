@@ -1,112 +1,72 @@
 #!/usr/bin/python3
 """
-FileStorage class file
+0x00. AirBnB clone - The console
+FileStorage class module
 """
+import json
 from models.base_model import BaseModel
 from models.user import User
-import json
 from models.state import State
 from models.city import City
-from models.place import Place
 from models.amenity import Amenity
+from models.place import Place
 from models.review import Review
-import models
-
-classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
-           "Place": Place, "Review": Review, "State": State, "User": User}
 
 
-class FileStorage():
+class FileStorage:
     """
-    ------------------
-    CLASS: FileStorage
-    ------------------
+    Class that serializes object/instances to a JSON file
+    and deserializes JSON file to objects/instances
     """
 
-    # ------------------------------- #
-    #       PUBLIC ATTRIBUTES         #
-    # ------------------------------- #
-
-    #path to the Json file
     __file_path = 'file.json'
-    #objects dictionary where to save
     __objects = {}
-
-    kryptix = ''
-    cll = [BaseModel, User, State, City, Amenity, Place, Review]
-    strx = ['BaseModel', 'User', 'State', 'City', 'Amenity', 'Place', 'Review']
+    className = {'BaseModel': BaseModel,
+                 'User': User,
+                 'State': State,
+                 'City': City,
+                 'Amenity': Amenity,
+                 'Place': Place,
+                 'Review': Review}
 
     def all(self):
         """
-        ---------------------------
-        PUBLIC INSTANCE METHOD: ALL
-        ---------------------------
-        DESCRIPTION:
-            Returns the dictionary stored in
-            the attribute '__objects'
-        ARGS:
-            @self: current instance
+        function that returns the dictionary __objects
         """
-
-        return self.__objects
+        return FileStorage.__objects
 
     def new(self, obj):
         """
-        ---------------------------
-        PUBLIC INSTANCE METHOD: NEW
-        ---------------------------
-        DESCRIPTION:
-            Adds the necessary objects to the
-            '__objects' attribute
-        ARGS:
-            @self: current instance
-            @obj: object to add to '__objects'
+        function that sets in __objects the obj with key <obj class name>.id
         """
-
-        if obj is not None:
-            keyx = obj.__class__.__name__ + "." + obj.id
-            self.__objects[keyx] = obj
-            FileStorage.kryptix = obj.__class__.__name__
+        key = '{}.{}'.format(obj.__class__.__name__, obj.id)
+        FileStorage.__objects[key] = obj
 
     def save(self):
         """
-        ----------------------------
-        PUBLIC INSTANCE METHOD: SAVE
-        ----------------------------
-        DESCRIPTION:
-            Serializes items in __objects to JSON
-            and dumps the output into a file defined
-            by '__file_path'
-        ARGS:
-            @self: current instance
+        function that serializes __objects to the JSON file
+        (path: __file_path); new_dict is a new dictionary in which
+        the objects/instances have been replaced by their respective
+        dictionary representation using the to_dict method from BaseModel
         """
-
-        json_objects = {}
-
-        for ob in self.__objects:
-            json_objects[ob] = self.__objects[ob].to_dict()
-
-        with open(self.__file_path, 'w') as filex:
-            json.dump(json_objects, filex)
+        new_dict = {}
+        for key, obj in FileStorage.__objects.items():
+            new_dict[key] = obj.to_dict()
+        with open(FileStorage.__file_path, 'w') as f:
+            f.write(json.dumps(new_dict))
 
     def reload(self):
         """
-        ------------------------------
-        PUBLIC INSTANCE METHOD: RELOAD
-        ------------------------------
-        DESCRIPTION:
-            Deserializes a JSON file, loads up
-            and loads up all of the instances
-            found in the file into the attribute
-            '__objects'
+        function that deserializes the JSON file to __objects
         """
-
         try:
-            with open(self.__file_path, 'r') as fx:
-                d = json.load(fx)
-
-            for x in d.keys():
-                self.__objects[x] = classes[d[x]["__class__"]](**d[x])
-
+            with open(FileStorage.__file_path, 'r') as f:
+                f_contents = f.read()
+                dict_obj_dicts = json.loads(f_contents)
+            for key in dict_obj_dicts.keys():
+                obj_dict = dict_obj_dicts[key]
+                # FileStorage.__objects[key] = BaseModel(**obj_dict)
+                FileStorage.__objects[key] = FileStorage\
+                           .className[key.split('.')[0]](**obj_dict)
         except FileNotFoundError:
             pass
